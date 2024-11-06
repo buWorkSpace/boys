@@ -2,6 +2,7 @@ import cv2
 import time  # FPS 계산을 위한 time 모듈 추가
 from source.detector import ObjectDetector
 from source.tracker import ObjectTracker
+# from face_recognition import FaceRecognition
 
 class VideoSaver:
     def __init__(self, input_path, output_path):
