@@ -6,6 +6,8 @@ from source.tracker import ObjectTracker
 class VideoSaver:
     def __init__(self, input_path, output_path):
         self.cap = cv2.VideoCapture(input_path)
+        if not self.cap.isOpened():
+            print('Error opening video file')
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -33,51 +35,58 @@ class FPSCounter:
         return int(self.fps)
 
 def main():
+    print('start')
+
+    # M1 Mac에서 MPS 백엔드 사용
+    model = ObjectDetector('./model/yolov8n-face.pt')
+    tracker = ObjectTracker(max_age=50)
+
+    # 웹캠 설정 변경
+    cap = cv2.VideoCapture(0)  # 또는 cv2.CAP_AVFOUNDATION + 0
+    
+    # 웹캠 설정
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
+    
+    if not cap.isOpened():
+        print("웹캠을 열 수 없습니다")
+        return
+
+    # output_video_path = 'output_video.mp4'
+    
+    # VideoSaver 수정된 초기화
+    # video_saver = VideoSaver(0, output_video_path)
+    fps_counter = FPSCounter()
+
+    while True:
+        ret, frame = cap.read()
+        
+        # 프레임 유효성 강화된 검사
+        if not ret or frame is None or frame.size == 0:
+            print("프레임 읽기 실패, 재시도...")
+            continue
+
+        detections = model.detect_objects(frame)
+        tracks = tracker.update(detections, frame)
+        frame = tracker.print_tracks(tracks, frame)
+            
+        fps = fps_counter.update()
+        cv2.putText(frame, str(fps), (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 2)
+            
+        cv2.imshow('Face Detection', frame)
+        # video_saver.write_frame(frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    # video_saver.release()
+    cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    main()
 
 
-	# def main():
-	# YOLOv8 모델 및 DeepSort 초기화
-	model = ObjectDetector('/content/drive/MyDrive/Colab Notebooks/yolov8n-face.pt')
-	tracker = ObjectTracker(max_age=50)
 
-	# 비디오 파일 경로 및 설정
-	input_video_path = '/content/drive/MyDrive/Colab Notebooks/faceCam영상.mov'
-	output_video_path = 'output_video.mp4'
 
-	# VideoSaver 초기화
-	video_saver = VideoSaver(input_video_path, output_video_path)
-
-	# FPSCounter 초기화
-	fps_counter = FPSCounter()
-
-	while video_saver.cap.isOpened():
-		ret, frame = video_saver.cap.read()
-		if not ret:
-			break
-
-		# 객체 감지 수행
-		detections = model.detect_objects(frame)
-
-		# 객체 추적 업데이트
-		tracks = tracker.update(detections, frame)
-
-		# 추적된 객체에 대해 바운딩 박스 및 클래스 이름 그리기
-		frame = tracker.print_tracks(tracks, frame)
-
-		# FPS 계산 및 텍스트 추가
-		fps = fps_counter.update()
-		
-		# 프레임에 FPS 텍스트 추가
-		cv2.putText(frame, str(fps), (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA)
-		
-		# 프레임을 출력 비디오에 저장
-		video_saver.write_frame(frame)
-
-	# 리소스 해제
-	video_saver.release()
-	cv2.destroyAllWindows()
-
-	# if __name__ == "__main__":
-		# main()
-
-	# https://github.com/derronqi/yolov8-face - yolov8n 출처
+# https://github.com/derronqi/yolov8-face - yolov8n 출처

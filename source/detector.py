@@ -1,10 +1,12 @@
-from ultralytics import YOLO
 import torch
+from ultralytics import YOLO
 
 class ObjectDetector:
     def __init__(self, model_path):
         self.model = YOLO(model_path)
-        if torch.backends.mps.is_available():
+        result = torch.backends.mps.is_available()
+        print(f'MPS is available: {result}')
+        if result:
             self.model.to('mps')
 
     def detect_objects(self, frame):
@@ -18,3 +20,4 @@ class ObjectDetector:
                     detections.append((box, conf, int(cls)))
 
         return detections
+
