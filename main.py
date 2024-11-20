@@ -37,6 +37,8 @@ class FPSCounter:
 
 def main():
     print('start')
+    
+    
 
     # M1 Mac에서 MPS 백엔드 사용
     model = ObjectDetector('./model/yolov8n-face.pt')
@@ -59,7 +61,10 @@ def main():
     # video_saver = VideoSaver(0, output_video_path)
     fps_counter = FPSCounter()
 
-    while True:
+    pause = True
+    detect = True
+    # while pause:
+    while detect:
         ret, frame = cap.read()
         
         # 프레임 유효성 강화된 검사
@@ -77,11 +82,22 @@ def main():
         cv2.imshow('Face Detection', frame)
         # video_saver.write_frame(frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        # 마우스 포커스를 벗어나면 종료
+        if cv2.getWindowProperty('Face Detection', cv2.WND_PROP_VISIBLE) < 1:
+            print("창 포커스 벗어남, 종료")
+            detect = False
+            
+        if cv2.waitKey(1) & 0xFF == ord('q') :
+            print("일시정지됌")
+            detect =False
+    
+        
+        # if cv2.waitKey(1) & 0xFF == ord('a'):        
+        #     pause = False
+        #     print('종료')
+        
 
     cap.release()
-    # video_saver.release()
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
