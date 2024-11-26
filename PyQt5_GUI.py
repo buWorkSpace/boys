@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import * 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 from PIL import Image, ImageOps
@@ -57,8 +57,6 @@ class memberCheckGUI(QMainWindow):
             os.remove(f"./tempPhoto/tempPhoto.jpg")
         self.main_window = memberCheckGUI()
         self.main_window.show()
-
-      
             
     
     def memberInsertGUI(self,typeNum): # 회원 사진 등록 버튼 클릭 시 GUI
@@ -76,7 +74,7 @@ class memberCheckGUI(QMainWindow):
         self.backPageButton.clicked.connect(self.mainPageGUI)
 
         self.nameText = QTextEdit(self.Insert_window)
-        self.nameLabel=QLabel('회원 이름',self.Insert_window)
+        self.nameLabel=QLabel('회원 닉네임',self.Insert_window)
         self.nameText.setGeometry(350,60,100,30)
         self.nameLabel.setGeometry(290, 60, 100, 30)
 
@@ -201,8 +199,11 @@ class memberCheckGUI(QMainWindow):
             if not ret:
                 print("프레임을 가져올 수 없습니다!")
                 break
+            
+            # 프레임 좌우 반전
+            flipped_frame = cv2.flip(frame, 1)  # 1은 좌우 반전
 
-            cv2.imshow("Camera (300x300)", frame)  # 화면에 표시
+            cv2.imshow("Camera (300x300)", flipped_frame)  # 화면에 표시
 
             key = cv2.waitKey(1) & 0xFF
             if key == 27:  # ESC 키
@@ -211,7 +212,7 @@ class memberCheckGUI(QMainWindow):
             elif key == 32:  # 스페이스바
                 # 사진 저장
                 filename = "./tempPhoto/tempPhoto.jpg"
-                cv2.imwrite(filename, frame)
+                cv2.imwrite(filename, flipped_frame)
                 print(f"사진이 저장되었습니다")
 
                 self.image_path = filename
@@ -236,7 +237,7 @@ class memberCheckGUI(QMainWindow):
         self.backPageButton.clicked.connect(self.mainPageGUI)
 
         self.nameText = QTextEdit(self.Delete_window)
-        self.nameLabel=QLabel('회원 이름',self.Delete_window)
+        self.nameLabel=QLabel('회원 닉네임',self.Delete_window)
         self.nameText.setGeometry(120,60,100,30)
         self.nameLabel.setGeometry(60, 60, 100, 30)
 

@@ -1,4 +1,4 @@
-#!/Users/soon/workSpace/git_boys_deepleaning/.venv/bin/python3.12
+#!/Users/soon/workSpace/git_boys_deeplearning/.venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

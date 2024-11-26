@@ -13,7 +13,7 @@ content = """
     <html>
     <body>
         <h2>{title}</h2>
-        <p>나은이랑 잘되고 싶다.</p>
+        <p>hello world</p>
     </body>
     </html>
 """.format(

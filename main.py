@@ -71,6 +71,9 @@ def main():
         if not ret or frame is None or frame.size == 0:
             print("프레임 읽기 실패, 재시도...")
             continue
+        
+        # **프레임 좌우 반전**
+        frame = cv2.flip(frame, 1)
 
         detections = model.detect_objects(frame)
         tracks = tracker.update(detections, frame)
