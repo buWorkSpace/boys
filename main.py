@@ -1,5 +1,6 @@
 import cv2
 import time  # FPS 계산을 위한 time 모듈 추가
+import logging
 from source.detector import ObjectDetector
 from source.tracker import ObjectTracker
 # from face_recognition import FaceRecognition
@@ -39,6 +40,8 @@ def main():
     print('start')
     
     
+    # 로그레벨 설정 - 프레임 로그 출력 제거
+    logging.getLogger("ultralytics").setLevel(logging.WARNING)
 
     # M1 Mac에서 MPS 백엔드 사용
     model = ObjectDetector('./model/yolov8n-face.pt')
