@@ -80,6 +80,9 @@ def main():
 
         detections = model.detect_objects(frame)
         tracks = tracker.update(detections, frame)
+        # for track in tracks:
+        #     print(f"Track ID: {track.track_id}")
+        #     print(f"Track state: {track.state}")
         frame = tracker.print_tracks(tracks, frame)
             
         fps = fps_counter.update()
