@@ -13,6 +13,16 @@ class CustomTrack(DeepSORTTrack):
         self.last_check_age = -1
         # self.original_ltwh = original_ltwh
         # self.det_class = det_class
+        self.is_move_left = False
+        self.previous_x = 0
+
+    def mark_missed(self):
+        super().mark_missed()
+        if (self.state == 3 and self.is_member == False and self.is_move_left == True):
+            # 부정 출입 감지
+            print(f"Track {self.track_id} missed at age {self.state}")
+            print(f"deleted Track State: {self.state}")
+
 
     def update_member_status(self, is_member):
         self.is_member = is_member
@@ -41,7 +51,8 @@ class ObjectTracker(DeepSort):
             
             # 얼굴 영역 좌표
             x1, y1, w, h = map(int, bbox)
-            
+            if (track.last_check_age == -1) :
+                track.previous_x = x1
 
             # 멤버 상태 체크 및 업데이트
             if (track.last_check_age == -1 or (track.age - track.last_check_age) > 30) and not track.is_member:
@@ -51,29 +62,21 @@ class ObjectTracker(DeepSort):
                 # 이미지가 비어있지 않은지 확인
                 if face_img.size > 0:  
                     # 얼굴 이미지 저장
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    filename = f"face_id{track.track_id}_{timestamp}.jpg"
-                    save_path = os.path.join(self.check_face_dir, filename)
-                    cv2.imwrite(save_path, face_img)
+                    # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    # filename = f"face_id{track.track_id}_{timestamp}.jpg"
+                    # save_path = os.path.join(self.check_face_dir, filename)
+                    # cv2.imwrite(save_path, face_img)
 
                     # 인식 시간으로 인한 딜레이 발생-> 비동기로 처리해서 실시간 보장해보기
                     is_match, _ = self.face_recognizer.compare_face_from_frame(face_img)
                     track.update_member_status(is_match)
+                    track.last_check_age = track.age
             
-
-            # 인스턴스 메서드로 호출
-            # is_match, distance = self.face_recognizer.compare_face_from_frame(face_img)
-            
-            # # 결과 표시
-            # color = (0, 255, 0) if is_match else (0, 0, 255)
-            # label = f"Member" if is_match else "Unknown"
-            # cv2.rectangle(frame, (x1, y1), (x1+w, y1+h), color, 2)
-            # cv2.putText(frame, label, (x1, y1-10), 
-            #            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-
-            # track의 ID로 클래스 이름 설정
-            # class_id = track.class_id if hasattr(track, 'class_id') else -1
-            class_name = "Unknown"  # 클래스 이름 가져오기
+                        # 멤버가 아닌 객체 부정출입 출입 감시
+            if (track.is_member == False):
+                if x1 < track.previous_x - 30:
+                    track.is_move_left = True
+                track.previous_x = x1
 
             # 멤버 상태에 따른 색상 및 라벨 설정
             color = (0, 255, 0) if track.is_member else (0, 0, 255)  # 멤버면 초록색, 아니면 빨간색
