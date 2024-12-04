@@ -76,6 +76,9 @@ class ObjectTracker(DeepSort):
             if (track.is_member == False):
                 if x1 < track.previous_x - 30:
                     track.is_move_left = True
+                if track.previ
+                if x1 > track.previous_x + 50:
+                    track.is_move_left = False
                 track.previous_x = x1
 
             # 멤버 상태에 따른 색상 및 라벨 설정
