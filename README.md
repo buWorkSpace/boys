@@ -1,13 +1,20 @@
 # boys
 
 deep learning project
+* 실행전 준비 사항
 
-가상환경 실행
-source ./.venv/bin/actiavte
+1. 가상환경 실행 (라이브러리 설치)
+  source ./.venv/bin/actiavte
 
-'./memberPhoto'에 본인 정면 사징을 넣어야 member로 인식 가능
+2. .env 파일 생성후 입력
+  # 보내는 사람 네이버 아이디
+  NAVER_ID = '이메일'
+  NAVER_PASS = '비밀번호'
 
-걍 main.py만 실행하면 시작함
+  # 수신자(헬스장 사장님)
+  RECIPIENT_ID = "이메일"
+
+3. start.py만 실행하면 시작함
 
 ### 간단 설명
 
@@ -19,4 +26,3 @@ source ./.venv/bin/actiavte
       -> True면 초록색 선으로 'member' 표시
       -> False면 빨간색 선으로 'UnKnown' 표시
 
-=> 적당히 테스트느 되는데 성능이 떨어지는거 같고 느림, deepface 비동기로 해봐야겠음

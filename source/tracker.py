@@ -2,9 +2,10 @@ from deep_sort_realtime.deepsort_tracker import DeepSort
 from deep_sort_realtime.deep_sort.track import Track as DeepSORTTrack
 import cv2
 import os
+import glob
 from datetime import datetime
 from source.face_recognition import FaceRecognition
-
+import emailSend
 
 class CustomTrack(DeepSORTTrack):
     def __init__(self, mean, covariance, track_id, n_init, max_age, feature=None, original_ltwh=None, det_class=None, det_conf=None, instance_mask=None, others=None):  
@@ -20,8 +21,11 @@ class CustomTrack(DeepSORTTrack):
         super().mark_missed()
         if (self.state == 3 and self.is_member == False and self.is_move_left == True):
             # 부정 출입 감지
-            print(f"Track {self.track_id} missed at age {self.state}")
+            print(f"\n객체 {self.track_id}번 등록되지 않은 회원이 부정출입 했습니다.  {self.state}")
             print(f"deleted Track State: {self.state}")
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            emailSend.emailSend(self.track_id)
+            print("이메일 보내짐@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 
     def update_member_status(self, is_member):
@@ -62,10 +66,22 @@ class ObjectTracker(DeepSort):
                 # 이미지가 비어있지 않은지 확인
                 if face_img.size > 0:  
                     # 얼굴 이미지 저장
-                    # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    # filename = f"face_id{track.track_id}_{timestamp}.jpg"
-                    # save_path = os.path.join(self.check_face_dir, filename)
-                    # cv2.imwrite(save_path, face_img)
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = f"face_id{track.track_id}_{timestamp}.jpg"
+                    save_path = os.path.join(self.check_face_dir, filename)
+                    cv2.imwrite(save_path, face_img)
+                    
+                    # 폴더 내 파일 개수 확인
+                    image_files = glob.glob(os.path.join(self.check_face_dir, "*.jpg"))
+                    if len(image_files) > 30: #사진 30장이 최대
+                        # 파일들을 생성일 기준으로 정렬
+                        image_files.sort(key=os.path.getctime)
+
+                        # 오래된 파일부터 삭제
+                        num_files_to_delete = len(image_files) - 30
+                        for i in range(num_files_to_delete):
+                            os.remove(image_files[i])
+                            print(f"오래된 파일 삭제: {image_files[i]}")
 
                     # 인식 시간으로 인한 딜레이 발생-> 비동기로 처리해서 실시간 보장해보기
                     is_match, _ = self.face_recognizer.compare_face_from_frame(face_img)
@@ -76,7 +92,7 @@ class ObjectTracker(DeepSort):
             if (track.is_member == False):
                 if x1 < track.previous_x - 30:
                     track.is_move_left = True
-                if track.previ
+                
                 if x1 > track.previous_x + 50:
                     track.is_move_left = False
                 track.previous_x = x1

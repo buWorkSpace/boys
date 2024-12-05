@@ -1,7 +1,9 @@
 import cv2
+import os
 import time  # FPS 계산을 위한 time 모듈 추가
 from source.detector import ObjectDetector
 from source.tracker import ObjectTracker
+import shutil  # 디렉토리 삭제에 사용
 # from face_recognition import FaceRecognition
 
 class VideoSaver:
@@ -37,8 +39,6 @@ class FPSCounter:
 
 def main():
     print('start')
-    
-    
 
     # M1 Mac에서 MPS 백엔드 사용
     model = ObjectDetector('./model/yolov8n-face.pt')
@@ -88,10 +88,12 @@ def main():
         # 마우스 포커스를 벗어나면 종료
         if cv2.getWindowProperty('Face Detection', cv2.WND_PROP_VISIBLE) < 1:
             print("창 포커스 벗어남, 종료")
+            shutil.rmtree("./checkFaceFolder")
             detect = False
             
         if cv2.waitKey(1) & 0xFF == ord('q') :
             print("일시정지됌")
+            shutil.rmtree("./checkFaceFolder")
             detect =False
     
         
@@ -99,7 +101,6 @@ def main():
         #     pause = False
         #     print('종료')
         
-
     cap.release()
     cv2.destroyAllWindows()
 
