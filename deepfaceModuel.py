@@ -15,19 +15,7 @@ class FaceRecognition:
         return cv2.imread(img_path)
 
     def find_match(self, img_path, db_path, detector_backend='retinaface', model_name='ArcFace', threshold=0.5):
-        """
-        Finds a match for the given image in the specified database.
-        
-        Parameters:
-            img_path (str): Path to the image for recognition.
-            db_path (str): Path to the database of face images.
-            detector_backend (str): Face detector backend to use.
-            model_name (str): DeepFace model name to use.
-            threshold (float): Threshold for matching.
-        
-        Returns:
-            dict: Contains match status, distance, and path to the matched image.
-        """
+      
         try:
             # Perform face recognition
             result = DeepFace.find(img_path=img_path, db_path=db_path,
@@ -53,13 +41,7 @@ class FaceRecognition:
             return None
 
     def visualize_results(self, img_path, match_info):
-        """
-        Visualizes the original and matched images, and displays match status.
-        
-        Parameters:
-            img_path (str): Path to the original image.
-            match_info (dict): Information about the match result.
-        """
+       
         # Load input image
         img = self.load_image(img_path)
         

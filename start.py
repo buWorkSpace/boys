@@ -223,8 +223,6 @@ class memberCheckGUI(QMainWindow):
         cv2.destroyAllWindows()
         self.imageLabelSet()
 
-
-
     def memberDeleteGUI(self): # 회원 사진 삭제 버튼 클릭 시 GUI
         self.close()
         self.Delete_window = QMainWindow()

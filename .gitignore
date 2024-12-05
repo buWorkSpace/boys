@@ -1,6 +1,6 @@
 .venv
-checkFaceFolder/
 memberPhoto/
 .vscode/
 .DS_Store
 .venv/bin/
+.env
