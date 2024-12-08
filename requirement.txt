@@ -1,0 +1,9 @@
+PyQt5
+pillow
+opencv-python
+torch
+ultralytics
+deep_sort_realtime
+deepface
+tf-keras
+python-dotenv

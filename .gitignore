@@ -4,3 +4,5 @@ memberPhoto/
 .DS_Store
 .venv/bin/
 .env
+__pycache__/
+/__pycache__/
